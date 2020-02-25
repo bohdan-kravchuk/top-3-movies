@@ -1,42 +1,50 @@
 import React from 'react'
 import MovieRow from './MovieRow'
+import Error from './Error'
+
+const urlPopular = 'https://api.themoviedb.org/3/movie/popular?api_key=bce2bca3c8a838c2a1176df5c0246f51&page=1';
 
 class HeroLane extends React.Component {
   constructor(props) {
     super(props);
 
-    this.state = {};
-
-    this.performLane();
+    this.state = {
+      rows: [],
+      error: null
+    };
   }
 
-  performLane() {
-    const urlPopular = 'https://api.themoviedb.org/3/movie/popular?api_key=bce2bca3c8a838c2a1176df5c0246f51&page=1';
-
-    fetch(urlPopular)
+  getMovieUrls() {  
+    return fetch(urlPopular)
       .then(response => response.json())
       .then(json => {
-        let results = json.results.slice(0, 3);
-        let movieRows = [];
-        let urlsArr = [];
-
-        results.forEach(movie => {
-          let urlDetails = `https://api.themoviedb.org/3/movie/${movie.id}?api_key=bce2bca3c8a838c2a1176df5c0246f51`;
-          urlsArr.push(urlDetails);
-        })
-
-        Promise.all(urlsArr.map(url => fetch(url)))
-          .then(responses => Promise.all(responses.map(r => r.json())))
-          .then(moviesData => {
-            moviesData.forEach(details => {
-              details.poster_src = "https://image.tmdb.org/t/p/w185" + details.poster_path;
-              details.allGenres = details.genres.map(genre => genre.name).join(', ');
-              details.truncDesc = this.truncate(details.overview, 300);
-              movieRows.push(<MovieRow key={details.id} details={details} />);
-            })
-          })
-          .then(() => this.setState({rows: movieRows}))
+        const results = json.results.slice(0, 3);
+        return results.map(movie => ({
+          urlDetails: `https://api.themoviedb.org/3/movie/${movie.id}?api_key=bce2bca3c8a838c2a1176df5c0246f51`
+        }))
       })
+      .catch(err => err)
+  }
+
+  fetchMovieDetails(urls) {
+    return Promise.all(urls.map(url => fetch(url.urlDetails)))
+      .then(responses => Promise.all(responses.map(response => response.json())))
+      .then(moviesData => {
+        const modifiedData = moviesData.map(details => ({
+          ...details,
+          poster_src: "https://image.tmdb.org/t/p/w185" + details.poster_path,
+          truncDesc: this.truncate(details.overview, 300)
+        }))
+        return modifiedData
+      })
+      .catch(err => err)
+  }
+
+  componentDidMount() {
+    this.getMovieUrls()
+      .then(detailedResult => this.fetchMovieDetails(detailedResult))
+      .then(modifiedData => this.setState({rows: modifiedData}))
+      .catch(err => this.setState({error: err}))
   }
 
   truncate(text, length) {
@@ -51,10 +59,11 @@ class HeroLane extends React.Component {
   }
 
   render() {
-    console.log('render herolane')
     return (
-      <div style={{width: '69%', marginRight: '15%', marginLeft: '15%'}}>
-        {this.state.rows}
+      <div>
+        {this.state.rows.length ? 
+          this.state.rows.map(row => (<MovieRow key={row.id} details={row} />)) : 
+          <Error errorData={this.state.error} />}
       </div>
     )
   }
