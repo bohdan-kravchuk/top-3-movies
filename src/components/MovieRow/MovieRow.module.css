@@ -1,0 +1,81 @@
+.MovieRow {
+  padding: 50px 0;
+  background-color: rgba(15, 15, 15, 0.7);
+  border-top: 2px solid lightgray;
+}
+
+.MovieRow .container {
+  width: 70%;
+  margin-right: 15%;
+  margin-left: 15%;
+  color: white;
+  font-family: Arial, Helvetica, sans-serif;
+  display: flex;
+  flex-flow: row nowrap;
+}
+
+.MovieRow .img {
+  display: flex;
+  align-items: center;
+}
+
+.MovieRow .content {
+  margin-left: 15px;
+}
+
+.MovieRow .content p {
+  line-height: 24px;
+}
+
+.MovieRow .content h2 {
+  color: white;
+  margin-bottom: 10px
+}
+
+.MovieRow ul {
+  list-style: none;
+  padding-left: 8px;
+  margin-top: 10px;
+  margin-bottom: 20px;
+}
+
+.MovieRow ul li {
+  display: inline-block;
+  border: 2px solid brown;
+  border-radius: 5px;
+  margin-right: 3px;
+  padding: 3px;
+  font-size: 14px;
+  color: lightgray;
+}
+
+.timeIcon {
+  width: 20px;
+  height: 20px;
+  position: relative;
+  top: 3px;
+}
+
+@media (max-width: 767px) {
+  .MovieRow .container {
+    width: 80%;
+    margin-right: 10%;
+    margin-left: 10%;
+  }
+}
+
+@media (max-width: 575px) {
+  .MovieRow .container {
+    width: 90%;
+    margin-right: 5%;
+    margin-left: 5%;
+  }
+}
+
+@media (max-width: 500px) {
+  .MovieRow .container {
+    flex-direction: column;
+    align-items: center;
+  }
+}
+

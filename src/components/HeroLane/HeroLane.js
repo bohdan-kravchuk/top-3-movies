@@ -1,6 +1,7 @@
-import React from 'react'
-import MovieRow from './MovieRow'
-import Error from './Error'
+import React from 'react';
+import MovieRow from '../MovieRow/MovieRow';
+import Error from '../Error';
+import Loader from "../../UI/Loader/Loader";
 
 const urlPopular = 'https://api.themoviedb.org/3/movie/popular?api_key=bce2bca3c8a838c2a1176df5c0246f51&page=1';
 
@@ -60,11 +61,15 @@ class HeroLane extends React.Component {
 
   render() {
     return (
-      <div>
-        {this.state.rows.length ? 
-          this.state.rows.map(row => (<MovieRow key={row.id} details={row} />)) : 
-          <Error errorData={this.state.error} />}
-      </div>
+      <main>
+        {
+          !this.state.rows.length && !this.state.error
+            ? <Loader />
+            : this.state.rows.length
+              ? this.state.rows.map(row => (<MovieRow key={row.id} details={row} />))
+              : <Error errorData={this.state.error} />
+        }
+      </main>
     )
   }
 }
